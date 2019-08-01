@@ -1,0 +1,104 @@
+{
+  "log": {
+    "loglevel": "warning",
+    "access": "/var/log/v2ray/access.log",
+    "error": "/var/log/v2ray/error.log"
+  },
+  "inbounds": [
+    {
+      "port": 80,
+      "protocol": "vmess",
+      "settings": {
+        "clients": [
+          {
+            "id": "<change-me>",
+            "level": 1,
+            "alterId": 64
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "ws",
+        "wsSettings": {
+          "path": "generate_204"
+        }
+      }
+    },
+    {
+      "port": 40109,
+      "protocol": "vmess",
+      "settings": {
+        "clients": [
+          {
+            "id": "<change-me>",
+            "level": 1,
+            "alterId": 64
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "mkcp",
+        "kcpSettings": {
+          "uplinkCapacity": 5,
+          "downlinkCapacity": 100,
+          "congestion": true,
+          "header": {
+            "type": "wechat-video"
+          }
+        }
+      }
+    }
+  ],
+  "outbounds": [
+    {
+      "protocol": "freedom",
+      "settings": {}
+    },
+    {
+      "protocol": "socks",
+      "settings": {
+        "servers": [
+          {
+            "address": "tor",
+            "port": 9050
+          }
+        ]
+      },
+      "tag": "tor"
+    },
+    {
+      "protocol": "blackhole",
+      "settings": {},
+      "tag": "blocked"
+    }
+  ],
+  "routing": {
+    "rules": [
+      {
+        "type": "field",
+        "inboundTag": [
+          "tor"
+        ],
+        "outboundTag": "tor"
+      },
+      {
+        "type": "field",
+        "domain": [
+          "domain:ifconfig.me",
+          "domain:onion",
+          "domain:torproject.org",
+          "domain:thehiddenwiki.org",
+          "domain:ahmia.fi"
+        ],
+        "outboundTag": "tor"
+      },
+      {
+        "type": "field",
+        "ip": [
+          "geoip:private"
+        ],
+        "outboundTag": "blocked"
+      }
+    ]
+  }
+}
